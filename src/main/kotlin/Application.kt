@@ -1,14 +1,5 @@
-import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonProcessingException
-import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.databind.deser.std.StdScalarDeserializer
 import com.fasterxml.jackson.databind.exc.ValueInstantiationException
-import com.fasterxml.jackson.databind.module.SimpleModule
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.typesafe.config.ConfigFactory
 import io.ktor.application.*
 import io.ktor.client.*
@@ -22,7 +13,6 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.netty.handler.codec.http.HttpObjectDecoder
 import io.netty.handler.codec.http.HttpServerCodec
-import java.io.IOException
 import java.net.SocketTimeoutException
 
 const val ApiPortKey = "ktor.deployment.port"
@@ -35,7 +25,6 @@ fun main() {
         connector {
             port = config.property(ApiPortKey).getString().toInt()
         }
-
     }
 
     embeddedServer(Netty, env, configure = {
@@ -43,26 +32,6 @@ fun main() {
             HttpServerCodec(HttpObjectDecoder.DEFAULT_MAX_INITIAL_LINE_LENGTH, HttpObjectDecoder.DEFAULT_MAX_HEADER_SIZE * 4, HttpObjectDecoder.DEFAULT_MAX_CHUNK_SIZE)
         }
     }).start(true)
-}
-
-fun jacksonConfiguration(objectMapper: ObjectMapper) {
-    objectMapper.apply {
-        configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-        configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
-        registerModule(StringTrimmerModule())
-        enable(SerializationFeature.INDENT_OUTPUT)
-        setSerializationInclusion(JsonInclude.Include.NON_NULL)
-    }
-}
-
-class StringTrimmerModule : SimpleModule() {
-    init {
-        addDeserializer(String::class.java, object : StdScalarDeserializer<String>(String::class.java) {
-            @Throws(IOException::class)
-            override fun deserialize(jsonParser: JsonParser, ctx: DeserializationContext): String =
-                jsonParser.valueAsString.trim()
-        })
-    }
 }
 
 @Suppress("unused") // Referenced in application.conf
@@ -75,7 +44,7 @@ fun Application.mainModule(
 
     install(ContentNegotiation) {
         jackson {
-            jacksonConfiguration(this)
+            jacksonConfiguration()
         }
     }
 
@@ -91,7 +60,7 @@ fun Application.mainModule(
             }
         }
 
-        exception<JsonProcessingException> { cause ->
+        exception<JsonProcessingException> {
             call.respond(HttpStatusCode.BadRequest, ErrorResponse("invalid.json"))
         }
 
@@ -103,11 +72,11 @@ fun Application.mainModule(
             call.respond(HttpStatusCode.InternalServerError, cause.error)
         }
 
-        exception<SocketTimeoutException> { cause ->
+        exception<SocketTimeoutException> {
             call.respond(HttpStatusCode.GatewayTimeout)
         }
 
-        exception<Exception> { cause ->
+        exception<Exception> {
             call.respond(HttpStatusCode.InternalServerError, ErrorResponse("unexpected.server.error"))
         }
 
