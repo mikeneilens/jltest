@@ -86,7 +86,7 @@ fun Application.mainModule(
         route("/products") {
             get {
                 val sourceProducts = ProductApiConnector(environment.config,client).getProducts()
-                val products = Products(sourceProducts.products.map{it.toProduct()})
+                val products = ReturnedProducts(sourceProducts.products.map{it.toProduct()})
                 call.respond(products)
             }
         }

@@ -1,8 +1,3 @@
-import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.JsonDeserializer
-import com.fasterxml.jackson.databind.JsonNode
-
 data class SourceProducts(
     val products:List<SourceProduct>
 )
@@ -13,7 +8,7 @@ data class SourceProduct(
     val colorSwatches:List<SourceColorSwatch>,
     val price:SourcePrice
 ) {
-    fun toProduct() = Product(productId)
+    fun toProduct() = ReturnedProduct(productId)
 }
 
 data class SourceColorSwatch(
