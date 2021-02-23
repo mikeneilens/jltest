@@ -36,9 +36,7 @@ dependencies {
     implementation("io.ktor:ktor-server-netty:$ktor_version")
     implementation ("ch.qos.logback:logback-classic:$logback_version")
 
-    testImplementation("io.kotest:kotest-assertions-core-jvm:$kotest_version")
-    testImplementation("io.kotest:kotest-assertions-json-jvm:$kotest_version")
-    testImplementation("io.kotest:kotest-runner-junit5-jvm:$kotest_version")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.6.0")
     testImplementation("io.ktor:ktor-client-mock-jvm:$ktor_version")
     testImplementation("io.ktor:ktor-client-mock:$ktor_version")
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
@@ -48,7 +46,9 @@ dependencies {
 
 }
 
-val test by tasks.getting(Test::class) {
-    useJUnitPlatform()
+tasks {
+    test {
+        useJUnitPlatform()
+    }
 }
 
