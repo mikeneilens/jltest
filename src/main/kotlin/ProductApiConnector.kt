@@ -3,6 +3,7 @@ import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.config.*
+import io.ktor.http.*
 
 class ProductApiConnector (
     val config: ApplicationConfig,
@@ -12,8 +13,15 @@ class ProductApiConnector (
     private val baseUrl =  config.property("services.$env.jl.url").getString()
     private val key =  config.property("services.$env.jl.key").getString()
 
-    suspend fun getProducts():SourceProducts = client.get<HttpResponse>("$baseUrl&$key").receive()
-
+    suspend fun getProducts():SourceProducts = client.get<HttpResponse>("$baseUrl&$key").handle()
 }
+
+suspend inline fun HttpResponse.handle(): SourceProducts =
+    if (status.isSuccess()) {
+         receive()
+    } else {
+        throw(InternalServerException(ErrorResponse("invalid request")))
+    }
+
 
 

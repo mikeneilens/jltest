@@ -43,6 +43,7 @@ dependencies {
     testImplementation("io.ktor:ktor-client-tests:$ktor_version")
     testImplementation("io.ktor:ktor-client-tests-jvm:$ktor_version")
     testImplementation("io.mockk:mockk:$mockk_version")
+    testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.2")
 
 }
 
@@ -52,3 +53,6 @@ tasks {
     }
 }
 
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    kotlinOptions { jvmTarget = "1.8" }
+}

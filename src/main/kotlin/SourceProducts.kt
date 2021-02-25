@@ -34,4 +34,11 @@ sealed class StringOrFromTo {
             is String -> value
             is FromTo -> "from: $from to: $to"
         }
+
+    override fun equals(other: Any?): Boolean =
+        when(this) {
+            is String -> (other is String && this.value == other.value)
+            is FromTo -> (other is FromTo && this.from == other.from && this.to == other.to)
+        }
+
 }

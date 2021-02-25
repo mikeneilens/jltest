@@ -3,7 +3,43 @@ import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-val json = """{
+class SourceProductTest {
+    @Test
+    fun `A StringOrFromTo is only equal to another StringOrFromTo when both have the same type and all values match`() {
+        val nowString_10_0 = StringOrFromTo.String("10")
+        val nowString_10_1 = StringOrFromTo.String("10")
+        val nowString_60 = StringOrFromTo.String("60")
+        assertTrue(nowString_10_0 == nowString_10_1)
+        assertTrue(nowString_10_0 != nowString_60)
+
+        val nowFromTo_10_20_0 = StringOrFromTo.FromTo("10","20")
+        val nowFromTo_10_20_1 = StringOrFromTo.FromTo("10","20")
+        val nowFromTo_15_20 = StringOrFromTo.FromTo("10","30")
+        val nowFromTo_10_30 = StringOrFromTo.FromTo("10","30")
+        assertTrue(nowFromTo_10_20_0 == nowFromTo_10_20_1)
+        assertTrue(nowFromTo_10_20_0 != nowFromTo_15_20)
+        assertTrue(nowFromTo_10_20_0 != nowFromTo_10_30)
+
+        assertTrue((nowString_10_0 as StringOrFromTo) != (nowFromTo_10_20_0 as StringOrFromTo))
+    }
+    @Test
+    fun `decoding product json results in a SourceProduct object containing the correct data`(){
+        jacksonMapper.jacksonConfiguration()
+        val result = jacksonMapper.readValue<SourceProducts>(testJson)
+
+        val expectedResult = SourceProducts(
+            listOf( SourceProduct("productId1","title1",
+                                listOf(SourceColorSwatch("color1","basicColor1","skuId1")),
+                                SourcePrice(StringOrFromTo.String("1.00"),"2.0","3.0",StringOrFromTo.String("4.0"),"GBP")),
+                    SourceProduct("productId2","title2",
+                                listOf(SourceColorSwatch("color2","basicColor2","skuId2")),
+                                SourcePrice(StringOrFromTo.FromTo("11.0","12.0"),"13.0","14.0",StringOrFromTo.FromTo("15.0","16.0"),"USD"))
+            )
+        )
+
+    }
+
+    val testJson = """{
     "products":[
         {
          "productId":"productId1",
@@ -49,52 +85,4 @@ val json = """{
       }
       ]}
 """.trimIndent()
-
-class SourceProductTest {
-    @Test
-    fun `decoding product json results in a SourceProduct object containing the correct data`(){
-        jacksonMapper.jacksonConfiguration()
-        val result = jacksonMapper.readValue<SourceProducts>(json)
-        assertEquals(2, result.products.size)
-
-        val product1 = result.products[0]
-        val product2 = result.products[1]
-        assertEquals("productId1", product1.productId)
-        assertEquals("productId2", product2.productId)
-        assertEquals("title1", product1.title)
-        assertEquals("title2", product2.title)
-
-        assertTrue(product1.price.was is StringOrFromTo.String)
-        assertEquals( "1.00", (product1.price.was as StringOrFromTo.String).value)
-
-        assertTrue(product2.price.was is StringOrFromTo.FromTo)
-        assertEquals( "11.0", (product2.price.was as StringOrFromTo.FromTo).from)
-        assertEquals( "12.0", (product2.price.was as StringOrFromTo.FromTo).to)
-
-        assertEquals( "2.0", product1.price.then1)
-        assertEquals( "13.0", product2.price.then1)
-
-        assertEquals( "3.0", product1.price.then2)
-        assertEquals( "14.0", product2.price.then2)
-
-        assertTrue(product1.price.now is StringOrFromTo.String)
-        assertEquals( "4.0", (product1.price.now as StringOrFromTo.String).value)
-
-        assertTrue(product2.price.now is StringOrFromTo.FromTo)
-        assertEquals( "15.0", (product2.price.now as StringOrFromTo.FromTo).from)
-        assertEquals( "16.0", (product2.price.now as StringOrFromTo.FromTo).to)
-
-        assertEquals( "GBP", product1.price.currency)
-        assertEquals( "USD", product2.price.currency)
-
-        assertEquals( 1, product1.colorSwatches.size)
-        assertEquals( 1, product2.colorSwatches.size)
-
-        assertEquals( "color1", product1.colorSwatches[0].color)
-        assertEquals( "color2", product2.colorSwatches[0].color)
-        assertEquals( "basicColor1", product1.colorSwatches[0].basicColor)
-        assertEquals( "basicColor2", product2.colorSwatches[0].basicColor)
-        assertEquals( "skuId1", product1.colorSwatches[0].skuId)
-        assertEquals( "skuId2", product2.colorSwatches[0].skuId)
-    }
 }
