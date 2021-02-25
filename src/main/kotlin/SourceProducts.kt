@@ -1,6 +1,8 @@
 data class SourceProducts(
     val products:List<SourceProduct>
-)
+) {
+    fun toProducts(labelType:LabelType) = ReturnedProducts(products.map{it.toProduct(labelType)})
+}
 
 data class SourceProduct(
     val productId:String,
@@ -8,7 +10,7 @@ data class SourceProduct(
     val colorSwatches:List<SourceColorSwatch>,
     val price:SourcePrice
 ) {
-    fun toProduct() = ReturnedProduct(productId)
+    fun toProduct(labelType:LabelType) = ReturnedProduct(productId)
 }
 
 data class SourceColorSwatch(

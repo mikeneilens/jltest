@@ -85,8 +85,9 @@ fun Application.mainModule(
     routing {
         route("/products") {
             get {
+                val labelType = call.parameters["labelType"].toLabelType()
                 val sourceProducts = ProductApiConnector(environment.config,client).getProducts()
-                val products = ReturnedProducts(sourceProducts.products.map{it.toProduct()})
+                val products = sourceProducts.toProducts(labelType)
                 call.respond(products)
             }
         }

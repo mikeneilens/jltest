@@ -1,25 +1,20 @@
-
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import io.ktor.client.*
-import io.ktor.client.engine.mock.*
-import io.ktor.client.features.json.*
-import io.ktor.client.request.*
 import io.ktor.config.*
 import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class ProductApiConnectorTest {
-
+    val config = MapApplicationConfig(
+        "ktor.environment" to "local",
+        "services.local.jl.url" to "https://api.johnlewis.com/search/api/rest/v2/catalog/products/search/keyword?q=dresses",
+        "services.local.jl.key" to "key=abcd"
+    )
     @Test
     fun `apiConnector can return a valid SourceProduct `() = runBlocking{
-        val config = MapApplicationConfig(
-            "ktor.environment" to "local",
-            "services.local.jl.url" to "https://api.johnlewis.com/search/api/rest/v2/catalog/products/search/keyword?q=dresses",
-            "services.local.jl.key" to "key=abcd"
-        )
+
         val client = createMockClient("https://api.johnlewis.com/search/api/rest/v2/catalog/products/search/keyword?q=dresses&key=abcd", HttpMethod.Get, testJson)
         val productApiConnector = ProductApiConnector(config,client)
         val expectedResult = SourceProducts(
@@ -35,6 +30,21 @@ class ProductApiConnectorTest {
         val result = productApiConnector.getProducts()
         assertEquals(2, result.products.size)
         assertEquals(expectedResult, result)
+    }
+
+    @Test
+    fun `apiConnector returns BadRequest if the request uses an invalid key`()  = runBlocking{
+        val client = createMockClient(
+            "https://api.johnlewis.com/search/api/rest/v2/catalog/products/search/keyword?q=dresses&key=abcd",
+            HttpMethod.Get, testJson,
+            HttpStatusCode.Forbidden)
+        val productApiConnector = ProductApiConnector(config,client)
+        try {
+            val result = productApiConnector.getProducts()
+            assertFalse(true,"Expected error to be thrown")
+        } catch(e:Throwable) {
+            assertTrue(e is BadRequestException)
+        }
     }
 
     val testJson = """{

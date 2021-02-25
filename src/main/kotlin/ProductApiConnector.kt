@@ -20,7 +20,7 @@ suspend inline fun HttpResponse.handle(): SourceProducts =
     if (status.isSuccess()) {
          receive()
     } else {
-        throw(InternalServerException(ErrorResponse("invalid request")))
+        throw (BadRequestException(ErrorResponse("","")))
     }
 
 
