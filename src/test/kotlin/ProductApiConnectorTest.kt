@@ -31,6 +31,7 @@ class ProductApiConnectorTest {
                                         SourcePrice(StringOrFromTo.FromTo("11.0","12.0"),"13.0","14.0",StringOrFromTo.FromTo("15.0","16.0"),"USD"))
             )
         )
+
         val result = productApiConnector.getProducts()
         assertEquals(2, result.products.size)
         assertEquals(expectedResult, result)

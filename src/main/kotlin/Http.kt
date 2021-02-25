@@ -8,4 +8,5 @@ fun client() = HttpClient (OkHttp){
     install(JsonFeature) {
         serializer = JacksonSerializer(jacksonObjectMapper(), ObjectMapper::jacksonConfiguration)
     }
+    expectSuccess = false
 }
