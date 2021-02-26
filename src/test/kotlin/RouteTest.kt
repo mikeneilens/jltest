@@ -11,7 +11,7 @@ class RouteTest  {
          "productId":"productId1",
          "title":"title1",
          "price":{
-            "was":"1.00",
+            "was":"",
             "then1":"2.0",
             "then2":"3.0",
             "now":"4.0",
@@ -76,8 +76,8 @@ class RouteTest  {
                   "rgbColor" : "unknown",
                   "skuId" : "skuId1"
                 } ],
-                "nowPrice" : "4.0",
-                "priceLabel" : "Was £1.00, now £4.0"
+                "nowPrice" : "4.00",
+                "priceLabel" : "Now £4.00"
               }, {
                 "productId" : "productId2",
                 "title" : "title2",
@@ -86,8 +86,8 @@ class RouteTest  {
                   "rgbColor" : "unknown",
                   "skuId" : "skuId2"
                 } ],
-                "nowPrice" : "15.0",
-                "priceLabel" : "Was $11.0 - 12.0, now $15.0 - 16.0"
+                "nowPrice" : "15",
+                "priceLabel" : "Was $11 - 12, now $15 - 16"
               } ]
             }
         """.trimIndent()

@@ -17,3 +17,4 @@ data class ColorSwatch (
 )
 
 fun String.toRgbColor():String = colorMap[this] ?: "unknown"
+

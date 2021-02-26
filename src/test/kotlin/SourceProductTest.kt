@@ -2,8 +2,8 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
-
 class SourceProductTest {
+
     @Test
     fun `A StringOrFromTo is only equal to another StringOrFromTo when both have the same type and all values match`() {
         val nowString_10_0 = StringOrFromTo.String("10")

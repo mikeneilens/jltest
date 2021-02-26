@@ -40,6 +40,7 @@ fun Application.mainModule(
 ) {
 
     install(DefaultHeaders)
+
     install(CallLogging)
 
     install(ContentNegotiation) {

@@ -5,7 +5,6 @@ import io.ktor.client.engine.mock.*
 import io.ktor.client.features.json.*
 import io.ktor.http.*
 
-object MockClient
 fun createMockClient(expectedUrl:String, expectedMethod: HttpMethod, response:String, responseCode:HttpStatusCode = HttpStatusCode.OK )  =
     HttpClient(MockEngine) {
         engine {

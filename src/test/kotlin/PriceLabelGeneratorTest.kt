@@ -24,6 +24,12 @@ class PriceLabelGeneratorTest {
     }
 
     @Test
+    fun `converting a price to a priceLabel when there is an empty was`() {
+        val price = SourcePrice(StringOrFromTo.Empty,"1.50","1.20",StringOrFromTo.String("1.00"),"GBP")
+        assertEquals("Now £1.00", price.createNow())
+    }
+
+    @Test
     fun `converting a price to a priceLabel when there is one now price and labelType is ShowWasNow`() {
         val price = SourcePrice(StringOrFromTo.String("2.00"),"1.50","1.20",StringOrFromTo.String("1.00"),"GBP")
         assertEquals("Was £2.00, now £1.00", price.createShowWasNow())

@@ -1,0 +1,39 @@
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
+import org.junit.Test
+import kotlin.test.assertEquals
+
+
+class JacksonConfigurationTest {
+
+    @Test
+    fun `reading a json node containing a string into StringOrFromTo String type`() {
+        val json = """{
+            "was":"1.20"
+            }
+        """.trimIndent()
+        val objectMapper = ObjectMapper()
+        val wasNode = objectMapper.readTree(json).get("was")
+       assertEquals(StringOrFromTo.String("1.20"),stringOrFromTo(wasNode))
+    }
+    @Test
+    fun `reading a json node containing an empty string into StringOrFromTo Empty type`() {
+        val json = """{
+            "was":""
+            }
+        """.trimIndent()
+        val objectMapper = ObjectMapper()
+        val wasNode = objectMapper.readTree(json).get("was")
+        assertEquals(StringOrFromTo.Empty,stringOrFromTo(wasNode))
+    }
+    @Test
+    fun `reading a json node containing a from to object into StringOrFromTo FromTo type`() {
+        val json = """{
+            "was":{"from":"1.20","to":"1.00"}
+            }
+        """.trimIndent()
+        val objectMapper = ObjectMapper()
+        val wasNode = objectMapper.readTree(json).get("was")
+        assertEquals(StringOrFromTo.FromTo("1.20","1.00"),stringOrFromTo(wasNode))
+    }
+}

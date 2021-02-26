@@ -14,12 +14,19 @@ fun ObjectMapper.jacksonConfiguration() =
 class StringOrFromToDeserializer: JsonDeserializer<StringOrFromTo>() {
     override fun deserialize(p: JsonParser, ctx: DeserializationContext):StringOrFromTo {
         val node: JsonNode = p.getCodec().readTree(p)
-        val string = node.textValue()
-        return if (string != null) StringOrFromTo.String(string) else {
-            val from = node.get("from")
-            val to = node.get("to")
-            if (from != null && to != null) StringOrFromTo.FromTo(from.textValue(), to.textValue())
-            else StringOrFromTo.String("")
-        }
+        return stringOrFromTo(node)
+    }
+}
+
+fun stringOrFromTo(node: JsonNode): StringOrFromTo {
+    val string = node.textValue()
+    return if (string != null) {
+        if (string.isEmpty()) StringOrFromTo.Empty
+        else StringOrFromTo.String(string)
+    } else {
+        val from = node.get("from")
+        val to = node.get("to")
+        if (from != null && to != null) StringOrFromTo.FromTo(from.textValue(), to.textValue())
+        else StringOrFromTo.String("")
     }
 }
