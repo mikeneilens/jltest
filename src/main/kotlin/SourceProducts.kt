@@ -1,23 +1,31 @@
-data class SourceProducts(
-    val products:List<SourceProduct>
-) {
-    fun toProducts(labelType:LabelType) = ReturnedProducts(products.map{it.toProduct(labelType)})
+
+data class SourceProducts(val products:List<SourceProduct>) {
+    fun toProducts(labelType:LabelType, priceLabelGenerator:(SourcePrice, LabelType)->String) = ReturnedProducts(products.map{it.toProduct(labelType, priceLabelGenerator)})
 }
 
 data class SourceProduct(
     val productId:String,
     val title:String,
     val colorSwatches:List<SourceColorSwatch>,
-    val price:SourcePrice
-) {
-    fun toProduct(labelType:LabelType) = ReturnedProduct(productId)
+    val price:SourcePrice) {
+
+    fun toProduct(labelType:LabelType, priceLabelGenerator:(SourcePrice, LabelType)->String):ReturnedProduct {
+        val now  = when(price.now) {
+            is StringOrFromTo.String -> price.now.value
+            is StringOrFromTo.FromTo -> price.now.from
+        }
+        val returnedSwatches = colorSwatches.map(SourceColorSwatch::toColorSwatch)
+        return ReturnedProduct(productId, title,returnedSwatches,now,priceLabelGenerator(price,labelType))
+    }
 }
 
 data class SourceColorSwatch(
     val color:String,
     val basicColor:String,
     val skuId:String
-)
+) {
+    fun toColorSwatch() = ColorSwatch(color, basicColor.toRgbColor(), skuId)
+}
 
 data class SourcePrice(
     val was:StringOrFromTo,
@@ -34,7 +42,7 @@ sealed class StringOrFromTo {
     override fun toString() =
         when(this) {
             is String -> value
-            is FromTo -> "from: $from to: $to"
+            is FromTo -> "$from - $to"
         }
 
     override fun equals(other: Any?): Boolean =

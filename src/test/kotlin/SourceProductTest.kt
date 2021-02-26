@@ -36,7 +36,36 @@ class SourceProductTest {
                                 SourcePrice(StringOrFromTo.FromTo("11.0","12.0"),"13.0","14.0",StringOrFromTo.FromTo("15.0","16.0"),"USD"))
             )
         )
+        assertEquals(expectedResult, result)
 
+    }
+    @Test
+    fun `converting a sourceProduct to a returned product when the now price has one value`() {
+        fun SourcePrice.mockPriceLabelGenerator(labelType:LabelType) = "$labelType"
+
+        val sourceProduct = SourceProduct("productId1","title1",
+            listOf(SourceColorSwatch("color1","Red","skuId1")),
+            SourcePrice(StringOrFromTo.String("1.00"),"2.0","3.0",StringOrFromTo.String("4.0"),"GBP"))
+
+        val expectedResult = ReturnedProduct("productId1","title1",
+            listOf(ColorSwatch("color1","FF0000","skuId1")),
+            "4.0","ShowWasNow" )
+
+        assertEquals(expectedResult, sourceProduct.toProduct(LabelType.ShowWasNow,SourcePrice::mockPriceLabelGenerator))
+    }
+    @Test
+    fun `converting a sourceProduct to a returned product when the now price has two values the lower now price is used`() {
+        fun SourcePrice.mockPriceLabelGenerator(labelType:LabelType) = "$labelType"
+
+        val sourceProduct = SourceProduct("productId1","title1",
+            listOf(SourceColorSwatch("color1","Red","skuId1")),
+            SourcePrice(StringOrFromTo.String("1.00"),"2.0","3.0",StringOrFromTo.FromTo("2.0","3.0"),"GBP"))
+
+        val expectedResult = ReturnedProduct("productId1","title1",
+            listOf(ColorSwatch("color1","FF0000","skuId1")),
+            "2.0","ShowWasNow" )
+
+        assertEquals(expectedResult, sourceProduct.toProduct(LabelType.ShowWasNow,SourcePrice::mockPriceLabelGenerator))
     }
 
     val testJson = """{

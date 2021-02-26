@@ -66,7 +66,34 @@ class RouteTest  {
         mainModule(client)
     } ){
         val call = handleRequest(HttpMethod.Get, "/products")
+        val expectedResult = """
+            {
+              "products" : [ {
+                "productId" : "productId1",
+                "title" : "title1",
+                "colorSwatches" : [ {
+                  "color" : "color1",
+                  "rgbColor" : "unknown",
+                  "skuId" : "skuId1"
+                } ],
+                "nowPrice" : "4.0",
+                "priceLabel" : "Was £1.00, now £4.0"
+              }, {
+                "productId" : "productId2",
+                "title" : "title2",
+                "colorSwatches" : [ {
+                  "color" : "color2",
+                  "rgbColor" : "unknown",
+                  "skuId" : "skuId2"
+                } ],
+                "nowPrice" : "15.0",
+                "priceLabel" : "Was $11.0 - 12.0, now $15.0 - 16.0"
+              } ]
+            }
+        """.trimIndent()
+
         assertEquals(HttpStatusCode.OK, call.response.status())
+        assertEquals(expectedResult, call.response.content)
     }
 
 
