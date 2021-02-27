@@ -1,6 +1,6 @@
 package config
 
-import StringOrFromTo
+import PriceType
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.*
 import com.fasterxml.jackson.databind.module.SimpleModule
@@ -10,18 +10,18 @@ fun ObjectMapper.jacksonConfiguration() =
         configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
         enable(SerializationFeature.INDENT_OUTPUT)
         val module = SimpleModule()
-        module.addDeserializer(StringOrFromTo::class.java, StringOrFromToDeserializer())
+        module.addDeserializer(PriceType::class.java, StringOrFromToDeserializer())
         registerModule(module)
     }
 
-class StringOrFromToDeserializer: JsonDeserializer<StringOrFromTo>() {
-    override fun deserialize(p: JsonParser, ctx: DeserializationContext):StringOrFromTo {
+class StringOrFromToDeserializer: JsonDeserializer<PriceType>() {
+    override fun deserialize(p: JsonParser, ctx: DeserializationContext):PriceType {
         val node: JsonNode = p.getCodec().readTree(p)
         return nodeToStringOrFromTo(node)
     }
 }
 
-fun nodeToStringOrFromTo(node: JsonNode): StringOrFromTo {
+fun nodeToStringOrFromTo(node: JsonNode): PriceType {
     val string = node.textValue()
     return if (string != null) {
         nodeToString(string)
@@ -31,9 +31,15 @@ fun nodeToStringOrFromTo(node: JsonNode): StringOrFromTo {
 }
 
 private fun nodeToString(string: String) =
-    if (string.isEmpty()) StringOrFromTo.Empty else StringOrFromTo.String(string)
+    if (string.isEmpty()) PriceType.Empty
+    else string.toDoubleOrNull()?.let{PriceType.Single(it)} ?: PriceType.Empty
 
-private fun nodeToFromTo(from:JsonNode, to:JsonNode) =
-    if (from != null && to != null) StringOrFromTo.FromTo(from.textValue(), to.textValue())
-    else StringOrFromTo.String("")
+private fun nodeToFromTo(from:JsonNode?, to:JsonNode?):PriceType {
+    return if (from != null && to != null) {
+        val fromPrice = from.textValue().toDoubleOrNull() ?: return PriceType.Empty
+        val toPrice = to.textValue().toDoubleOrNull() ?: return PriceType.Empty
+        PriceType.FromTo(fromPrice, toPrice)
+    }
+    else PriceType.Empty
+}
 

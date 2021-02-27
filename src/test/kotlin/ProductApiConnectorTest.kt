@@ -20,10 +20,10 @@ class ProductApiConnectorTest {
         val expectedResult = SourceProducts(
             listOf( SourceProduct("productId1","title1",
                                         listOf(SourceColorSwatch("color1","basicColor1","skuId1")),
-                                        SourcePrice(StringOrFromTo.String("1.00"),"2.0","3.0",StringOrFromTo.String("4.0"),"GBP")),
+                                        SourcePrice(PriceType.Single(1.00),PriceType.Single(2.0),PriceType.Single(3.0),PriceType.Single(4.0),"GBP")),
                     SourceProduct("productId2","title2",
                                         listOf(SourceColorSwatch("color2","basicColor2","skuId2")),
-                                        SourcePrice(StringOrFromTo.FromTo("11.0","12.0"),"13.0","14.0",StringOrFromTo.FromTo("15.0","16.0"),"USD"))
+                                        SourcePrice(PriceType.FromTo(11.0,12.0),PriceType.Single(13.0),PriceType.Single(14.0),PriceType.FromTo(15.0,16.0),"USD"))
             )
         )
 

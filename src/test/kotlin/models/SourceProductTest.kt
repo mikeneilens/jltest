@@ -7,7 +7,7 @@ import SourceColorSwatch
 import SourcePrice
 import SourceProduct
 import SourceProducts
-import StringOrFromTo
+import PriceType
 import com.fasterxml.jackson.module.kotlin.readValue
 import config.jacksonConfiguration
 import jacksonMapper
@@ -26,16 +26,16 @@ class SourceProductTest {
                 SourceProduct(
                     "productId1", "title1",
                     listOf(SourceColorSwatch("color1", "basicColor1", "skuId1")),
-                    SourcePrice(StringOrFromTo.String("1.00"), "2.0", "3.0", StringOrFromTo.String("4.0"), "GBP")
+                    SourcePrice(PriceType.Single(1.00), PriceType.Single(2.0), PriceType.Single(3.0), PriceType.Single(4.0), "GBP")
                 ),
                 SourceProduct(
                     "productId2", "title2",
                     listOf(SourceColorSwatch("color2", "basicColor2", "skuId2")),
                     SourcePrice(
-                        StringOrFromTo.FromTo("11.0", "12.0"),
-                        "13.0",
-                        "14.0",
-                        StringOrFromTo.FromTo("15.0", "16.0"),
+                        PriceType.FromTo(11.0, 12.0),
+                        PriceType.Single(13.0),
+                        PriceType.Single(14.0),
+                        PriceType.FromTo(15.0, 16.0),
                         "USD"
                     )
                 )
@@ -51,13 +51,13 @@ class SourceProductTest {
         val sourceProduct = SourceProduct(
             "productId1", "title1",
             listOf(SourceColorSwatch("color1", "Red", "skuId1")),
-            SourcePrice(StringOrFromTo.String("1.00"), "2.0", "3.0", StringOrFromTo.String("4.0"), "GBP")
+            SourcePrice(PriceType.Single(1.00), PriceType.Single(2.0), PriceType.Single(3.0), PriceType.Single(4.0), "GBP")
         )
 
         val expectedResult = Product(
             "productId1", "title1",
             listOf(ColorSwatch("color1", "FF0000", "skuId1")),
-            "4.0", "ShowWasNow"
+            "4.00", "ShowWasNow"
         )
 
         assertEquals(expectedResult, sourceProduct.toProduct(LabelType.ShowWasNow, SourcePrice::mockPriceLabelGenerator))
@@ -69,13 +69,13 @@ class SourceProductTest {
         val sourceProduct = SourceProduct(
             "productId1", "title1",
             listOf(SourceColorSwatch("color1", "Red", "skuId1")),
-            SourcePrice(StringOrFromTo.String("1.00"), "2.0", "3.0", StringOrFromTo.FromTo("2.0", "3.0"), "GBP")
+            SourcePrice(PriceType.Single(1.0), PriceType.Single(2.0), PriceType.Single(3.0), PriceType.FromTo(2.0, 3.0), "GBP")
         )
 
         val expectedResult = Product(
             "productId1", "title1",
             listOf(ColorSwatch("color1", "FF0000", "skuId1")),
-            "2.0", "ShowWasNow"
+            "2.00", "ShowWasNow"
         )
 
         assertEquals(expectedResult, sourceProduct.toProduct(LabelType.ShowWasNow, SourcePrice::mockPriceLabelGenerator))

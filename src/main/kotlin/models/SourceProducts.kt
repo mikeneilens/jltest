@@ -11,9 +11,9 @@ data class SourceProduct(
 
     fun toProduct(labelType:LabelType, priceLabelGenerator:(SourcePrice, LabelType)->String):Product {
         val now  = when(price.now) {
-            is StringOrFromTo.String -> price.now.value.priceFormatter()
-            is StringOrFromTo.FromTo -> price.now.from.priceFormatter()
-            is StringOrFromTo.Empty -> ""
+            is PriceType.Single -> price.now.value.priceFormatter()
+            is PriceType.FromTo -> price.now.from.priceFormatter()
+            is PriceType.Empty -> ""
         }
         val returnedSwatches = colorSwatches.map(SourceColorSwatch::toColorSwatch)
         return Product(productId, title,returnedSwatches,now,priceLabelGenerator(price,labelType))
