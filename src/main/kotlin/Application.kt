@@ -89,7 +89,7 @@ fun Application.mainModule(
             get {
                 val labelType = call.parameters["labelType"] ?: ""
                 val sourceProducts = ProductApiConnector(environment.config,client).getProducts()
-                val products = sourceProducts.toProducts(priceLabelGenerator(labelType))
+                val products = sourceProducts.toProducts(obtainPriceLabelGenerator(labelType))
                 call.respond(products)
             }
         }

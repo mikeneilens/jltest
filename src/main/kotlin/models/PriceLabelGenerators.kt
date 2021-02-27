@@ -6,7 +6,7 @@ val priceLabelGenerator = mapOf(
     "ShowPercDiscount" to SourcePrice::createShowPercDiscount,
 )
 
-fun priceLabelGenerator(labelType:String) = priceLabelGenerator[labelType] ?: SourcePrice::createShowWasNow
+fun obtainPriceLabelGenerator(labelType:String) = priceLabelGenerator[labelType] ?: SourcePrice::createShowWasNow
 
 fun SourcePrice.createShowWasNow() = if (was is PriceType.Empty) createShowNow() else "Was $displayCurrency$was, now $displayCurrency$now"
 

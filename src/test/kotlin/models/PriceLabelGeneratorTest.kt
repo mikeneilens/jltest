@@ -6,22 +6,22 @@ class PriceLabelGeneratorTest {
     @Test
     fun `obtaining a pricelabel generator when labelType is ShowWasNow`() {
         val price = SourcePrice(PriceType.Single(2.00), PriceType.Single(1.50), PriceType.Single(1.20), PriceType.Single(1.00), "GBP")
-        assertEquals("Was £2.00, now £1.00", priceLabelGenerator("ShowWasNow")(price))
+        assertEquals("Was £2.00, now £1.00", obtainPriceLabelGenerator("ShowWasNow")(price))
     }
     @Test
     fun `obtaining a pricelabel generator when labelType is ShowWasThenNow`() {
         val price = SourcePrice(PriceType.Single(2.00), PriceType.Single(1.50), PriceType.Single(1.25), PriceType.Single(1.00), "GBP")
-        assertEquals("Was £2.00, then £1.25 now £1.00", priceLabelGenerator("ShowWasThenNow")(price))
+        assertEquals("Was £2.00, then £1.25 now £1.00", obtainPriceLabelGenerator("ShowWasThenNow")(price))
     }
     @Test
     fun `obtaining a pricelabel generator when labelType is ShowPercDiscount`() {
         val price = SourcePrice(PriceType.Single(2.00), PriceType.Single(1.50), PriceType.Empty, PriceType.Single(1.00), "GBP")
-        assertEquals("50% off - now £1.00", priceLabelGenerator("ShowPercDiscount")(price))
+        assertEquals("50% off - now £1.00", obtainPriceLabelGenerator("ShowPercDiscount")(price))
     }
     @Test
     fun `obtaining a pricelabel generator when labelType is empty`() {
         val price = SourcePrice(PriceType.Single(2.00), PriceType.Single(1.50), PriceType.Single(1.20), PriceType.Single(1.00), "GBP")
-        assertEquals("Was £2.00, now £1.00", priceLabelGenerator("")(price))
+        assertEquals("Was £2.00, now £1.00", obtainPriceLabelGenerator("")(price))
     }
 
     @Test
