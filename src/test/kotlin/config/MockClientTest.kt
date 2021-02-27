@@ -1,3 +1,6 @@
+package config
+
+import createMockClient
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -9,7 +12,7 @@ class MockClientTest {
     @Test
     fun `mock client should return OK if url and method match expected url and method`() = runBlocking{
 
-        val mockClient = createMockClient("https://mike.com", HttpMethod.Get,"success")
+        val mockClient = createMockClient("https://mike.com", HttpMethod.Get, "success")
         val result = mockClient.get<String>("https://mike.com")
         assertEquals("success",result)
     }
@@ -31,14 +34,14 @@ class MockClientTest {
             }
         """.trimIndent()
 
-        val mockClient = createMockClient("https://mike.com", HttpMethod.Get,errorMessaage, HttpStatusCode.Forbidden)
+        val mockClient = createMockClient("https://mike.com", HttpMethod.Get, errorMessaage, HttpStatusCode.Forbidden)
         val result = mockClient.get<HttpResponse>("https://mike.com")
         assertEquals(HttpStatusCode.Forbidden, result.status)
     }
 
     @Test
     fun `mock client throws an exception if method or url doesnt match the expected url or method`() = runBlocking {
-        val mockClient = createMockClient("https://mike.com", HttpMethod.Get,"success")
+        val mockClient = createMockClient("https://mike.com", HttpMethod.Get, "success")
         val result:HttpResponse = mockClient.get("https://wrongurl")
         assertEquals(HttpStatusCode.BadRequest, result.status)
     }

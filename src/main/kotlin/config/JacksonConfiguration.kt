@@ -1,3 +1,6 @@
+package config
+
+import StringOrFromTo
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.*
 import com.fasterxml.jackson.databind.module.SimpleModule
@@ -14,19 +17,23 @@ fun ObjectMapper.jacksonConfiguration() =
 class StringOrFromToDeserializer: JsonDeserializer<StringOrFromTo>() {
     override fun deserialize(p: JsonParser, ctx: DeserializationContext):StringOrFromTo {
         val node: JsonNode = p.getCodec().readTree(p)
-        return stringOrFromTo(node)
+        return nodeToStringOrFromTo(node)
     }
 }
 
-fun stringOrFromTo(node: JsonNode): StringOrFromTo {
+fun nodeToStringOrFromTo(node: JsonNode): StringOrFromTo {
     val string = node.textValue()
     return if (string != null) {
-        if (string.isEmpty()) StringOrFromTo.Empty
-        else StringOrFromTo.String(string)
+        nodeToString(string)
     } else {
-        val from = node.get("from")
-        val to = node.get("to")
-        if (from != null && to != null) StringOrFromTo.FromTo(from.textValue(), to.textValue())
-        else StringOrFromTo.String("")
+        nodeToFromTo(node.get("from"),node.get("to"))
     }
 }
+
+private fun nodeToString(string: String) =
+    if (string.isEmpty()) StringOrFromTo.Empty else StringOrFromTo.String(string)
+
+private fun nodeToFromTo(from:JsonNode, to:JsonNode) =
+    if (from != null && to != null) StringOrFromTo.FromTo(from.textValue(), to.textValue())
+    else StringOrFromTo.String("")
+

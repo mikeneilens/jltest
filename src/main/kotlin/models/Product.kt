@@ -1,8 +1,7 @@
-import kotlin.math.roundToInt
 
-data class ReturnedProducts (val products:List<ReturnedProduct>)
+data class Products (val products:List<Product>)
 
-data class ReturnedProduct (
+data class Product (
     val productId:String,
     val title:String,
     val colorSwatches:List<ColorSwatch>,

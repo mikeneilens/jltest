@@ -1,7 +1,10 @@
+package models
+
 import org.junit.jupiter.api.Test
+import toRgbColor
 import kotlin.test.assertEquals
 
-class ReturnedProductTest {
+class ProductTest {
     @Test
     fun `converting a string containing a colour to an rgbColor gives the correct hex value for the color`() {
         assertEquals("000000", "Black".toRgbColor())

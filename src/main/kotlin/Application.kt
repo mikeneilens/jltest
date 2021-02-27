@@ -1,6 +1,7 @@
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.exc.ValueInstantiationException
 import com.typesafe.config.ConfigFactory
+import config.jacksonConfiguration
 import io.ktor.application.*
 import io.ktor.client.*
 import io.ktor.config.*

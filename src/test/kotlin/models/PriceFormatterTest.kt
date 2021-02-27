@@ -1,4 +1,7 @@
+package models
+
 import org.junit.jupiter.api.Test
+import priceFormatter
 import kotlin.test.assertEquals
 
 class PriceFormatterTest {
