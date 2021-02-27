@@ -9,8 +9,8 @@ data class SourcePrice(
 sealed class PriceType {
     class Single(val value: Double):PriceType()
     class FromTo(val from: Double, val to: Double):PriceType()
-    class Invalid(val value:String):PriceType()
     object Empty:PriceType()
+    class Invalid(val value:String):PriceType()
 
     override fun toString() =
         when(this) {

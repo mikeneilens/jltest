@@ -2,37 +2,38 @@ import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 class PriceLabelGeneratorTest {
+
     @Test
-    fun `generating a pricelabel when labelType is ShowWasNow`() {
+    fun `obtaining a pricelabel generator when labelType is ShowWasNow`() {
         val price = SourcePrice(PriceType.Single(2.00), PriceType.Single(1.50), PriceType.Single(1.20), PriceType.Single(1.00), "GBP")
-        assertEquals("Was £2.00, now £1.00", price.priceLabelGenerator(LabelType.ShowWasNow))
+        assertEquals("Was £2.00, now £1.00", priceLabelGenerator("ShowWasNow")(price))
     }
     @Test
-    fun `generating a pricelabel when labelType is ShowWasThenNow`() {
+    fun `obtaining a pricelabel generator when labelType is ShowWasThenNow`() {
         val price = SourcePrice(PriceType.Single(2.00), PriceType.Single(1.50), PriceType.Single(1.25), PriceType.Single(1.00), "GBP")
-        assertEquals("Was £2.00, then £1.25 now £1.00", price.priceLabelGenerator(LabelType.ShowWasThenNow))
+        assertEquals("Was £2.00, then £1.25 now £1.00", priceLabelGenerator("ShowWasThenNow")(price))
     }
     @Test
-    fun `generating a pricelabel when labelType is ShowPercDiscount`() {
+    fun `obtaining a pricelabel generator when labelType is ShowPercDiscount`() {
         val price = SourcePrice(PriceType.Single(2.00), PriceType.Single(1.50), PriceType.Empty, PriceType.Single(1.00), "GBP")
-        assertEquals("50% off - now £1.00", price.priceLabelGenerator(LabelType.ShowPercDiscount))
+        assertEquals("50% off - now £1.00", priceLabelGenerator("ShowPercDiscount")(price))
     }
     @Test
-    fun `generating a pricelabel when labelType is None`() {
+    fun `obtaining a pricelabel generator when labelType is empty`() {
         val price = SourcePrice(PriceType.Single(2.00), PriceType.Single(1.50), PriceType.Single(1.20), PriceType.Single(1.00), "GBP")
-        assertEquals("Was £2.00, now £1.00", price.priceLabelGenerator(LabelType.None))
+        assertEquals("Was £2.00, now £1.00", priceLabelGenerator("")(price))
     }
 
     @Test
     fun `converting a price to a priceLabel when there is an empty was`() {
         val price = SourcePrice(PriceType.Empty, PriceType.Single(1.50), PriceType.Single(1.20), PriceType.Single(1.00), "GBP")
-        assertEquals("Now £1.00", price.createNow())
+        assertEquals("Now £1.00", price.createShowNow())
     }
 
     @Test
     fun `converting a price to a priceLabel when there is an invalid now`() {
         val price = SourcePrice(PriceType.Empty, PriceType.Single(1.50), PriceType.Single(1.20), PriceType.Invalid("abc"), "GBP")
-        assertEquals("Now £abc", price.createNow())
+        assertEquals("Now £abc", price.createShowNow())
     }
 
     @Test

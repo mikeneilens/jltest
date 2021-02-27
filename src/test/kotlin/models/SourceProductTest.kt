@@ -1,16 +1,5 @@
-package models
-
-import ColorSwatch
-import LabelType
-import Product
-import SourceColorSwatch
-import SourcePrice
-import SourceProduct
-import SourceProducts
-import PriceType
 import com.fasterxml.jackson.module.kotlin.readValue
 import config.jacksonConfiguration
-import jacksonMapper
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
@@ -46,7 +35,7 @@ class SourceProductTest {
     }
     @Test
     fun `converting a sourceProduct to a returned product when the now price has one value`() {
-        fun SourcePrice.mockPriceLabelGenerator(labelType: LabelType) = "$labelType"
+        fun SourcePrice.mockPriceLabelGenerator() = "price is $now"
 
         val sourceProduct = SourceProduct(
             "productId1", "title1",
@@ -57,14 +46,14 @@ class SourceProductTest {
         val expectedResult = Product(
             "productId1", "title1",
             listOf(ColorSwatch("color1", "FF0000", "skuId1")),
-            "4.00", "ShowWasNow"
+            "4.00", "price is 4.00"
         )
 
-        assertEquals(expectedResult, sourceProduct.toProduct(LabelType.ShowWasNow, SourcePrice::mockPriceLabelGenerator))
+        assertEquals(expectedResult, sourceProduct.toProduct(SourcePrice::mockPriceLabelGenerator))
     }
     @Test
     fun `converting a sourceProduct to a returned product when the now price has two values the lower now price is used`() {
-        fun SourcePrice.mockPriceLabelGenerator(labelType: LabelType) = "$labelType"
+        fun SourcePrice.mockPriceLabelGenerator() = "price is $now"
 
         val sourceProduct = SourceProduct(
             "productId1", "title1",
@@ -75,14 +64,14 @@ class SourceProductTest {
         val expectedResult = Product(
             "productId1", "title1",
             listOf(ColorSwatch("color1", "FF0000", "skuId1")),
-            "2.00", "ShowWasNow"
+            "2.00", "price is 2.00 - 3.00"
         )
 
-        assertEquals(expectedResult, sourceProduct.toProduct(LabelType.ShowWasNow, SourcePrice::mockPriceLabelGenerator))
+        assertEquals(expectedResult, sourceProduct.toProduct(SourcePrice::mockPriceLabelGenerator))
     }
     @Test
     fun `converting a sourceProduct to a returned product when the now price has an invalid value then the invalid price is preserved`() {
-        fun SourcePrice.mockPriceLabelGenerator(labelType: LabelType) = "$labelType"
+        fun SourcePrice.mockPriceLabelGenerator() = "price is $now"
 
         val sourceProduct = SourceProduct(
             "productId1", "title1",
@@ -93,10 +82,10 @@ class SourceProductTest {
         val expectedResult = Product(
             "productId1", "title1",
             listOf(ColorSwatch("color1", "FF0000", "skuId1")),
-            "two", "ShowWasNow"
+            "two", "price is two"
         )
 
-        assertEquals(expectedResult, sourceProduct.toProduct(LabelType.ShowWasNow, SourcePrice::mockPriceLabelGenerator))
+        assertEquals(expectedResult, sourceProduct.toProduct(SourcePrice::mockPriceLabelGenerator))
     }
 
     val testJson = """{

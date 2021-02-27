@@ -1,17 +1,17 @@
 import kotlin.math.roundToInt
 
-fun SourcePrice.priceLabelGenerator(labelType: LabelType) =
-    if (was is PriceType.Empty) createNow()
-    else
-    when(labelType) {
-        LabelType.ShowWasNow, LabelType.None -> createShowWasNow()
-        LabelType.ShowWasThenNow -> createShowWasThenNow()
-        LabelType.ShowPercDiscount -> createShowPercDiscount()
-    }
+val priceLabelGenerator = mapOf(
+    "ShowWasNow" to SourcePrice::createShowWasNow,
+    "ShowWasThenNow" to SourcePrice::createShowWasThenNow,
+    "ShowPercDiscount" to SourcePrice::createShowPercDiscount,
+)
 
-fun SourcePrice.createShowWasNow() = "Was $displayCurrency$was, now $displayCurrency$now"
+fun priceLabelGenerator(labelType:String) = priceLabelGenerator[labelType] ?: SourcePrice::createShowWasNow
+
+fun SourcePrice.createShowWasNow() = if (was is PriceType.Empty) createShowNow() else "Was $displayCurrency$was, now $displayCurrency$now"
 
 fun SourcePrice.createShowWasThenNow():String {
+    if (was is PriceType.Empty) return createShowNow() else
     if (then2 is PriceType.Empty && then1 is PriceType.Empty) return createShowWasNow()
     val thenPrice = if(then2 is PriceType.Empty) then1 else then2
     return "Was $displayCurrency${was}, then $displayCurrency$thenPrice now $displayCurrency$now"
@@ -24,7 +24,7 @@ fun SourcePrice.createShowPercDiscount():String {
     return "$percDiscount% off - now $displayCurrency$now"
 }
 
-fun SourcePrice.createNow(): String = "Now $displayCurrency$now"
+fun SourcePrice.createShowNow(): String = "Now $displayCurrency$now"
 
 private val PriceType.minValue get()  =
     when (this) {
