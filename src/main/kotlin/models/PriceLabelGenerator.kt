@@ -1,6 +1,6 @@
 import kotlin.math.roundToInt
 
-fun SourcePrice.priceLabelGenerator(labelType:LabelType) =
+fun SourcePrice.priceLabelGenerator(labelType: LabelType) =
     if (was is PriceType.Empty) createNow()
     else
     when(labelType) {

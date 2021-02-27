@@ -1,14 +1,4 @@
-package models
-
-import LabelType
-import SourcePrice
-import PriceType
-import createNow
-import createShowPercDiscount
-import createShowWasNow
-import createShowWasThenNow
 import org.junit.jupiter.api.Test
-import priceLabelGenerator
 import kotlin.test.assertEquals
 
 class PriceLabelGeneratorTest {
