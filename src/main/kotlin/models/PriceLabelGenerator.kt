@@ -18,22 +18,19 @@ fun SourcePrice.createShowWasThenNow():String {
 }
 
 fun SourcePrice.createShowPercDiscount():String {
-    val originalWas = when(was) {
-        is PriceType.Single -> was.value
-        is PriceType.FromTo -> was.from
-        is PriceType.Empty -> 0.0
-    }
-    val originalNow = when(now) {
-        is PriceType.Single -> now.value
-        is PriceType.FromTo -> now.from
-        is PriceType.Empty -> 0.0
-    }
-    if (originalWas == 0.0) return "No Was"
-    if (originalNow == 0.0) return "No Now"
-    val percDiscount = ((originalWas - originalNow)/originalWas * 100.00).roundToInt()
+    if (was.minValue == 0.0) return "No Was"
+    if (now.minValue == 0.0) return "No Now"
+    val percDiscount = ((was.minValue - now.minValue)/was.minValue * 100.00).roundToInt()
     return "$percDiscount% off - now $displayCurrency$now"
 }
 
 fun SourcePrice.createNow(): String = "Now $displayCurrency$now"
+
+private val PriceType.minValue get()  =
+    when (this) {
+        is PriceType.Single -> value
+        is PriceType.FromTo -> from
+        is PriceType.Empty -> 0.0
+    }
 
 private val SourcePrice.displayCurrency get() = currencyMap[currency]
