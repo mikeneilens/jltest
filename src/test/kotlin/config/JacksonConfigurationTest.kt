@@ -38,4 +38,24 @@ class JacksonConfigurationTest {
         val wasNode = objectMapper.readTree(json).get("was")
         assertEquals(PriceType.FromTo(1.20, 1.00),nodeToStringOrFromTo(wasNode))
     }
+    @Test
+    fun `reading a json node containing an invalid string into PriceType Invalid type`() {
+        val json = """{
+            "was":"abc"
+            }
+        """.trimIndent()
+        val objectMapper = ObjectMapper()
+        val wasNode = objectMapper.readTree(json).get("was")
+        assertEquals(PriceType.Invalid("abc"),nodeToStringOrFromTo(wasNode))
+    }
+    @Test
+    fun `reading a json node containing an negative value into PriceType Invalid type`() {
+        val json = """{
+            "was":"-1"
+            }
+        """.trimIndent()
+        val objectMapper = ObjectMapper()
+        val wasNode = objectMapper.readTree(json).get("was")
+        assertEquals(PriceType.Invalid("-1"),nodeToStringOrFromTo(wasNode))
+    }
 }

@@ -30,7 +30,7 @@ private val PriceType.minValue get()  =
     when (this) {
         is PriceType.Single -> value
         is PriceType.FromTo -> from
-        is PriceType.Empty -> 0.0
+        is PriceType.Empty, is PriceType.Invalid -> 0.0
     }
 
 private val SourcePrice.displayCurrency get() = currencyMap[currency]

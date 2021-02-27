@@ -30,6 +30,12 @@ class PriceLabelGeneratorTest {
     }
 
     @Test
+    fun `converting a price to a priceLabel when there is an invalid now`() {
+        val price = SourcePrice(PriceType.Empty, PriceType.Single(1.50), PriceType.Single(1.20), PriceType.Invalid("abc"), "GBP")
+        assertEquals("Now £abc", price.createNow())
+    }
+
+    @Test
     fun `converting a price to a priceLabel when there is a single now price and labelType is ShowWasNow`() {
         val price = SourcePrice(PriceType.Single(2.00), PriceType.Single(1.50), PriceType.Single(1.20), PriceType.Single(1.00), "GBP")
         assertEquals("Was £2.00, now £1.00", price.createShowWasNow())

@@ -80,6 +80,24 @@ class SourceProductTest {
 
         assertEquals(expectedResult, sourceProduct.toProduct(LabelType.ShowWasNow, SourcePrice::mockPriceLabelGenerator))
     }
+    @Test
+    fun `converting a sourceProduct to a returned product when the now price has an invalid value then the invalid price is preserved`() {
+        fun SourcePrice.mockPriceLabelGenerator(labelType: LabelType) = "$labelType"
+
+        val sourceProduct = SourceProduct(
+            "productId1", "title1",
+            listOf(SourceColorSwatch("color1", "Red", "skuId1")),
+            SourcePrice(PriceType.Single(1.0), PriceType.Single(2.0), PriceType.Single(3.0), PriceType.Invalid("two"), "GBP")
+        )
+
+        val expectedResult = Product(
+            "productId1", "title1",
+            listOf(ColorSwatch("color1", "FF0000", "skuId1")),
+            "two", "ShowWasNow"
+        )
+
+        assertEquals(expectedResult, sourceProduct.toProduct(LabelType.ShowWasNow, SourcePrice::mockPriceLabelGenerator))
+    }
 
     val testJson = """{
     "products":[

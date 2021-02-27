@@ -25,6 +25,16 @@ class PriceTypeTest {
 
         val emptyString = PriceType.Single(0.0)
         val empty = PriceType.Empty
+        val empty_1 = PriceType.Empty
+        assertTrue((empty as PriceType) == (empty_1 as PriceType))
         assertTrue((emptyString as PriceType) != (empty as PriceType))
+
+        val invalid1 = PriceType.Invalid("abc")
+        val invalid2 = PriceType.Invalid("abc")
+        val invalid3 = PriceType. Invalid("ab")
+        assertTrue((invalid1 as PriceType) == (invalid2 as PriceType))
+        assertTrue((invalid1 as PriceType) != (invalid3 as PriceType))
+
+
     }
 }

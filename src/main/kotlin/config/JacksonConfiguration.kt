@@ -32,14 +32,18 @@ fun nodeToStringOrFromTo(node: JsonNode): PriceType {
 
 private fun nodeToString(string: String) =
     if (string.isEmpty()) PriceType.Empty
-    else string.toDoubleOrNull()?.let{PriceType.Single(it)} ?: PriceType.Empty
+    else string.toPositiveDoubleOrNull()?.let{PriceType.Single(it)} ?: PriceType.Invalid(string)
 
 private fun nodeToFromTo(from:JsonNode?, to:JsonNode?):PriceType {
     return if (from != null && to != null) {
-        val fromPrice = from.textValue().toDoubleOrNull() ?: return PriceType.Empty
-        val toPrice = to.textValue().toDoubleOrNull() ?: return PriceType.Empty
+        val fromPrice = from.textValue().toPositiveDoubleOrNull() ?: return PriceType.Invalid(from.textValue())
+        val toPrice = to.textValue().toPositiveDoubleOrNull() ?: return PriceType.Invalid(to.textValue())
         PriceType.FromTo(fromPrice, toPrice)
     }
     else PriceType.Empty
 }
+
+fun String.toPositiveDoubleOrNull():Double? = toDouble()?.let{ if (it >= 0) it else null} ?: null
+
+
 

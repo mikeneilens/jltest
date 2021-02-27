@@ -13,6 +13,7 @@ data class SourceProduct(
         val now  = when(price.now) {
             is PriceType.Single -> price.now.value.priceFormatter()
             is PriceType.FromTo -> price.now.from.priceFormatter()
+            is PriceType.Invalid -> price.now.value
             is PriceType.Empty -> ""
         }
         val returnedSwatches = colorSwatches.map(SourceColorSwatch::toColorSwatch)
