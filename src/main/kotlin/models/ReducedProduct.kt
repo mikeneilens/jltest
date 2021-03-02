@@ -1,7 +1,7 @@
 
-data class Products (val products:List<Product>)
+data class ReducedProducts (val products:List<ReducedProduct>)
 
-data class Product (
+data class ReducedProduct (
     val productId:String,
     val title:String,
     val colorSwatches:List<ColorSwatch>,
@@ -14,6 +14,4 @@ data class ColorSwatch (
     val rgbColor:String,
     val skuId:String
 )
-
-fun String.toRgbColor():String = colorMap[this] ?: "unknown"
 

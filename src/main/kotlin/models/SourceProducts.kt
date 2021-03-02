@@ -1,6 +1,6 @@
-
 data class SourceProducts(val products:List<SourceProduct>) {
-    fun toProducts(priceLabelGenerator:(SourcePrice)->String) = Products(products.map{it.toProduct(priceLabelGenerator)})
+    fun toProducts(priceLabelGenerator:(SourcePrice)->String) =
+        ReducedProducts(products.filter { it.price.isReduced() }.map { it.toProduct(priceLabelGenerator) })
 }
 
 data class SourceProduct(
@@ -9,7 +9,7 @@ data class SourceProduct(
     val colorSwatches:List<SourceColorSwatch>,
     val price:SourcePrice) {
 
-    fun toProduct(priceLabelGenerator:(SourcePrice)->String):Product {
+    fun toProduct(priceLabelGenerator:(SourcePrice)->String):ReducedProduct {
         val now  = when(price.now) {
             is PriceType.Single -> price.now.value.priceFormatter()
             is PriceType.FromTo -> price.now.from.priceFormatter()
@@ -17,7 +17,7 @@ data class SourceProduct(
             is PriceType.Empty -> ""
         }
         val returnedSwatches = colorSwatches.map(SourceColorSwatch::toColorSwatch)
-        return Product(productId, title,returnedSwatches,now,priceLabelGenerator(price))
+        return ReducedProduct(productId, title,returnedSwatches,now,priceLabelGenerator(price))
     }
 }
 

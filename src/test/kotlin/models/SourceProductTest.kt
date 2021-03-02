@@ -31,10 +31,9 @@ class SourceProductTest {
             )
         )
         assertEquals(expectedResult, result)
-
     }
     @Test
-    fun `converting a sourceProduct to a returned product when the now price has one value`() {
+    fun `converting a sourceProduct to a reduced product when the now price has one value`() {
         fun SourcePrice.mockPriceLabelGenerator() = "price is $now"
 
         val sourceProduct = SourceProduct(
@@ -43,7 +42,7 @@ class SourceProductTest {
             SourcePrice(PriceType.Single(1.00), PriceType.Single(2.0), PriceType.Single(3.0), PriceType.Single(4.0), "GBP")
         )
 
-        val expectedResult = Product(
+        val expectedResult = ReducedProduct(
             "productId1", "title1",
             listOf(ColorSwatch("color1", "FF0000", "skuId1")),
             "4.00", "price is 4.00"
@@ -52,7 +51,7 @@ class SourceProductTest {
         assertEquals(expectedResult, sourceProduct.toProduct(SourcePrice::mockPriceLabelGenerator))
     }
     @Test
-    fun `converting a sourceProduct to a returned product when the now price has two values the lower now price is used`() {
+    fun `converting a sourceProduct to a reduced product when the now price has two values the lower now price is used`() {
         fun SourcePrice.mockPriceLabelGenerator() = "price is $now"
 
         val sourceProduct = SourceProduct(
@@ -61,7 +60,7 @@ class SourceProductTest {
             SourcePrice(PriceType.Single(1.0), PriceType.Single(2.0), PriceType.Single(3.0), PriceType.FromTo(2.0, 3.0), "GBP")
         )
 
-        val expectedResult = Product(
+        val expectedResult = ReducedProduct(
             "productId1", "title1",
             listOf(ColorSwatch("color1", "FF0000", "skuId1")),
             "2.00", "price is 2.00 - 3.00"
@@ -70,7 +69,7 @@ class SourceProductTest {
         assertEquals(expectedResult, sourceProduct.toProduct(SourcePrice::mockPriceLabelGenerator))
     }
     @Test
-    fun `converting a sourceProduct to a returned product when the now price has an invalid value then the invalid price is preserved`() {
+    fun `converting a sourceProduct to a reduced product when the now price has an invalid value then the invalid price is preserved`() {
         fun SourcePrice.mockPriceLabelGenerator() = "price is $now"
 
         val sourceProduct = SourceProduct(
@@ -79,7 +78,7 @@ class SourceProductTest {
             SourcePrice(PriceType.Single(1.0), PriceType.Single(2.0), PriceType.Single(3.0), PriceType.Invalid("two"), "GBP")
         )
 
-        val expectedResult = Product(
+        val expectedResult = ReducedProduct(
             "productId1", "title1",
             listOf(ColorSwatch("color1", "FF0000", "skuId1")),
             "two", "price is two"
@@ -87,6 +86,38 @@ class SourceProductTest {
 
         assertEquals(expectedResult, sourceProduct.toProduct(SourcePrice::mockPriceLabelGenerator))
     }
+    @Test
+    fun `converting SourceProducts to ReducedProducts when the list of SourceProducts contains two products with only one product discounted should return one product`() {
+        fun SourcePrice.mockPriceLabelGenerator() = "price was $was is now $now"
+
+        val sourceProducts = SourceProducts(
+            listOf(
+                SourceProduct(
+                    "productId1", "title1",
+                        listOf(SourceColorSwatch("color1", "Red", "skuId1")),
+                        SourcePrice(PriceType.Single(6.0), PriceType.Single(5.0), PriceType.Single(4.50), PriceType.Single(4.0), "GBP")
+                ),
+                SourceProduct(
+                    "productId2", "title2",
+                    listOf(SourceColorSwatch("color2", "Blue", "skuId1")),
+                    SourcePrice(PriceType.Empty, PriceType.Single(2.0), PriceType.Single(3.0), PriceType.Single(4.5), "GBP")
+                )
+            )
+        )
+
+        val expectedResult = ReducedProducts(
+            listOf(
+                ReducedProduct(
+                    "productId1", "title1",
+                    listOf(ColorSwatch("color1", "FF0000", "skuId1")),
+                    "4.00", "price was 6.00 is now 4.00"
+                )
+            )
+        )
+
+        assertEquals(expectedResult, sourceProducts.toProducts (SourcePrice::mockPriceLabelGenerator))
+    }
+
 
     val testJson = """{
     "products":[

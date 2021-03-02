@@ -1,3 +1,5 @@
+fun String.toRgbColor():String = colorMap[this] ?: "unknown"
+
 val colorMap = mapOf(
     "MediumVioletRed" to "C71585",
     "DeepPink" to "FF1493",

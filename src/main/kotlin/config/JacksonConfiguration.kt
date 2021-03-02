@@ -43,7 +43,7 @@ private fun nodeToFromTo(from:JsonNode?, to:JsonNode?):PriceType {
     else PriceType.Empty
 }
 
-fun String.toPositiveDoubleOrNull():Double? = toDouble()?.let{ if (it >= 0) it else null} ?: null
+fun String.toPositiveDoubleOrNull():Double? = toDoubleOrNull()?.let{ if (it >= 0) it else null} ?: null
 
 
 

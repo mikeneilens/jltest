@@ -1,10 +1,30 @@
-package models
-
 import PriceType
 import org.junit.jupiter.api.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class PriceTypeTest {
+    @Test
+    fun `A PriceType of type Empty displays as empty string`() {
+        val priceType = PriceType.Empty
+        assertEquals("", priceType.toString())
+    }
+    @Test
+    fun `A PriceType of Single displays as a string containing the numerical value`() {
+        val priceType = PriceType.Single(1.2)
+        assertEquals("1.20", priceType.toString())
+    }
+    @Test
+    fun `A PriceType of FromTo displays as a string containing the from and to values seperated by a dash`() {
+        val priceType = PriceType.FromTo(15.0, 9.5)
+        assertEquals("15 - 9.50", priceType.toString())
+    }
+    @Test
+    fun `A PriceType of Invalid displays as a string containing value that is invalid`() {
+        val priceType = PriceType.Invalid("invalid!")
+        assertEquals("invalid!", priceType.toString())
+    }
+
     @Test
     fun `A PriceType is only equal to another PriceType when both have the same type and all values match`() {
         val nowString_10_0 = PriceType.Single(10.0)
@@ -34,7 +54,5 @@ class PriceTypeTest {
         val invalid3 = PriceType. Invalid("ab")
         assertTrue((invalid1 as PriceType) == (invalid2 as PriceType))
         assertTrue((invalid1 as PriceType) != (invalid3 as PriceType))
-
-
     }
 }
