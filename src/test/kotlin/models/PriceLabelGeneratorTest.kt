@@ -83,16 +83,21 @@ class PriceLabelGeneratorTest {
     @Test
     fun `converting a price to a priceLabel uses lower was now prices when there is two now prices and labelType is ShowPercDscount`() {
         val price =
-            SourcePrice(PriceType.FromTo(2.00, 2.50), PriceType.Single(1.50), PriceType.Empty, PriceType.FromTo(1.00, 1.20), "GBP")
+            SourcePrice(was=PriceType.FromTo(2.00, 2.50), PriceType.Single(1.50), PriceType.Empty, now=PriceType.FromTo(1.00, 1.20), "GBP")
         assertEquals("50% off - now £1.00 - 1.20", price.createShowPercDiscount())
     }
     @Test
     fun `converting a price to a priceLabel when there is an invalid was or now price and labelType is ShowPercDscount`() {
+        val emptyWasPrice =
+            SourcePrice(was=PriceType.Empty, then1=PriceType.Single(1.50), then2=PriceType.Empty, now=PriceType.Single(1.00), "GBP")
+        assertEquals("Now £1.00", emptyWasPrice.createShowPercDiscount())
+
         val invalidWasPrice =
-            SourcePrice(PriceType.Empty, PriceType.Single(1.50), PriceType.Empty, PriceType.Single(1.00), "GBP")
+            SourcePrice(was=PriceType.Invalid("abc"), then1=PriceType.Single(1.50), then2=PriceType.Empty, now=PriceType.Single(1.00), "GBP")
         assertEquals("No Was", invalidWasPrice.createShowPercDiscount())
+
         val invalidNowPrice =
-            SourcePrice(PriceType.Single(2.00), PriceType.Single(1.50), PriceType.Empty, PriceType.Single(0.0), "GBP")
+            SourcePrice(was=PriceType.Single(2.00), then1=PriceType.Single(1.50), then2=PriceType.Empty, now=PriceType.Single(0.0), "GBP")
         assertEquals("No Now", invalidNowPrice.createShowPercDiscount())
     }
 }

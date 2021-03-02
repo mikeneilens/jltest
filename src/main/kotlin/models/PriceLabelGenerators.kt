@@ -18,6 +18,7 @@ fun SourcePrice.createShowWasThenNow():String {
 }
 
 fun SourcePrice.createShowPercDiscount():String {
+    if (was is PriceType.Empty) return createShowNow() else
     if (was.minValue == 0.0) return "No Was"
     if (now.minValue == 0.0) return "No Now"
     val percDiscount = ((was.minValue - now.minValue)/was.minValue * 100.00).roundToInt()
