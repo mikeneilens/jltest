@@ -2,13 +2,18 @@
 
 This uses the Kotlin Ktor web framework.
 
-The url and key of the webservice used as the source of the data are in ```resources/application.conf```.
+To run locally, run main and use:
+ 
+```curl --location --request GET 'http://localhost:8081/products?labelType=ShowWasThenNow'```
+
+The url and key of the webservice used as the source of the data are in 
+```resources/application.conf```.
 
 ### Issues:
  
 #### Was and Now can contain either empty string, a string or {from:, to:}.
 
-The label generator will create a "Now £x.xx" if the Was is empty but "Was £0.00, now £x.xx" if the Was is set to zero.
+The label generator will create a "Now £x.xx" if the __was__ is empty but "Was £0.00, now £x.xx" if the __was__ is set to zero.
 
 If any price contains a from/to value then the label generator shows both value e.g. "from £1.50 - 2.50".
 

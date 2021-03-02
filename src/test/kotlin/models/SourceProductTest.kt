@@ -51,7 +51,7 @@ class SourceProductTest {
         assertEquals(expectedResult, sourceProduct.toProduct(SourcePrice::mockPriceLabelGenerator))
     }
     @Test
-    fun `converting a sourceProduct to a reduced product when the now price has two values the lower now price is used`() {
+    fun `converting a sourceProduct to a reduced product when the now price has two values the now price shows from to`() {
         fun SourcePrice.mockPriceLabelGenerator() = "price is $now"
 
         val sourceProduct = SourceProduct(
@@ -63,7 +63,7 @@ class SourceProductTest {
         val expectedResult = ReducedProduct(
             "productId1", "title1",
             listOf(ColorSwatch("color1", "FF0000", "skuId1")),
-            "2.00", "price is 2.00 - 3.00"
+            "2.00 - 3.00", "price is 2.00 - 3.00"
         )
 
         assertEquals(expectedResult, sourceProduct.toProduct(SourcePrice::mockPriceLabelGenerator))
