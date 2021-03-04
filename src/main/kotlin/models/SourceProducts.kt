@@ -10,8 +10,8 @@ data class SourceProduct(
     val price:SourcePrice) {
 
     fun toProduct(priceLabelGenerator:(SourcePrice)->String):ReducedProduct {
-        val returnedSwatches = colorSwatches.map(SourceColorSwatch::toColorSwatch)
-        return ReducedProduct(productId, title, returnedSwatches, price.now.toString(), priceLabelGenerator(price))
+        val reducedSwatches = colorSwatches.map(SourceColorSwatch::toColorSwatch)
+        return ReducedProduct(productId, title, reducedSwatches, price.now.toString(), priceLabelGenerator(price))
     }
 }
 
