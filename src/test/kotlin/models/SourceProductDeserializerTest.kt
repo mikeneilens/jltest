@@ -3,49 +3,51 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.readValue
 import config.jacksonConfiguration
-import org.junit.jupiter.api.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
+import io.kotest.core.spec.style.WordSpec
+import io.kotest.matchers.should
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.beInstanceOf
 
 class Now (@JsonProperty("now") val now:PriceType)
 
 val jacksonMapper = ObjectMapper().registerModule(KotlinModule())
 
-class SourceProductDeserializerTest {
+class SourceProductDeserializerTest:WordSpec({
 
-    @Test
-    fun `deserializing a StringOrFromTo returns the string value if the json value is a string`() {
-        val json = """
+    "deserialising a StringOrFromTo" should ({
+        "create a priceType with a single value if the json is a single value" {
+            val json = """
             {
             "now":"123.456" 
             }
             """.trimIndent()
-        jacksonMapper.jacksonConfiguration()
-        val result = jacksonMapper.readValue<Now>(json).now as PriceType.Single
-        assertEquals(123.456, result.value)
-    }
-    @Test
-    fun `deserializing a StringOrFromTo returns the from and to values if the json value is a from to object`() {
-        val json = """
+            jacksonMapper.jacksonConfiguration()
+            val result = jacksonMapper.readValue<Now>(json).now as PriceType.Single
+            result.value shouldBe 123.456
+        }
+
+        "create a priceType with a from/to value if the json has a from and to value" {
+            val json = """
             {
             "now":{"from":"123.4","to":"567.8"} 
             }
             """.trimIndent()
-        jacksonMapper.jacksonConfiguration()
-        val result = jacksonMapper.readValue<Now>(json).now as PriceType.FromTo
-        assertEquals(123.4, result.from)
-        assertEquals(567.8, result.to)
-    }
-    @Test
-    fun `deserializing a StringOrFromTo returns empty if the json value is an object not containing from or to keys`() {
-        val json = """
+            jacksonMapper.jacksonConfiguration()
+            val result = jacksonMapper.readValue<Now>(json).now as PriceType.FromTo
+            result.from shouldBe 123.4
+            result.to shouldBe 567.8
+        }
+        "create a priceType with an empty type if the json has an invalid set of values" {
+            val json = """
             {
             "now":{"f":"123.4","t":"567.8"} 
             }
             """.trimIndent()
-        jacksonMapper.jacksonConfiguration()
-        val result = jacksonMapper.readValue<Now>(json).now
-        assertTrue(result is PriceType.Empty)
-    }
-}
+            jacksonMapper.jacksonConfiguration()
+            val result = jacksonMapper.readValue<Now>(json).now
+            result should beInstanceOf<PriceType.Empty>()
+        }
+
+    })
+})
 

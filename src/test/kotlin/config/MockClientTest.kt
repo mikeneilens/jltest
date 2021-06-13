@@ -1,25 +1,18 @@
 package config
 
 import createMockClient
+import io.kotest.core.spec.style.StringSpec
+import io.kotest.matchers.shouldBe
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import kotlinx.coroutines.runBlocking
-import org.junit.jupiter.api.Test
-import kotlin.test.assertEquals
 
-class MockClientTest {
-    @Test
-    fun `mock client should return OK if url and method match expected url and method`() = runBlocking{
-
+class MockClientTest:StringSpec( {
+    "when url and method match expected url and method, mock client should return OK"{
         val mockClient = createMockClient("https://mike.com", HttpMethod.Get, "success")
-        val result = mockClient.get<String>("https://mike.com")
-        assertEquals("success",result)
+        mockClient.get<String>("https://mike.com") shouldBe "success"
     }
-
-    @Test
-    fun `mock client should return 401 if url and method match expected url and method but response is expected to be 401`() = runBlocking{
-
+    "when url and method match expected url and method but response is expected to be 401, mock client should return 401" {
         val errorMessaage = """
             {
              "code": 3,
@@ -36,13 +29,8 @@ class MockClientTest {
 
         val mockClient = createMockClient("https://mike.com", HttpMethod.Get, errorMessaage, HttpStatusCode.Forbidden)
         val result = mockClient.get<HttpResponse>("https://mike.com")
-        assertEquals(HttpStatusCode.Forbidden, result.status)
+
+        result.status shouldBe HttpStatusCode.Forbidden
     }
 
-    @Test
-    fun `mock client throws an exception if method or url doesnt match the expected url or method`() = runBlocking {
-        val mockClient = createMockClient("https://mike.com", HttpMethod.Get, "success")
-        val result:HttpResponse = mockClient.get("https://wrongurl")
-        assertEquals(HttpStatusCode.BadRequest, result.status)
-    }
-}
+})

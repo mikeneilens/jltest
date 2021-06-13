@@ -42,6 +42,9 @@ dependencies {
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
     testImplementation("io.ktor:ktor-client-tests:$ktor_version")
     testImplementation("io.ktor:ktor-client-tests-jvm:$ktor_version")
+    testImplementation("io.kotest:kotest-assertions-core-jvm:$kotest_version")
+    testImplementation("io.kotest:kotest-assertions-json-jvm:$kotest_version")
+    testImplementation("io.kotest:kotest-runner-junit5-jvm:$kotest_version")
 
 }
 
