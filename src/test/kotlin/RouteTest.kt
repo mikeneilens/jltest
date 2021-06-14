@@ -1,10 +1,12 @@
+import io.kotest.core.spec.style.StringSpec
+import io.kotest.matchers.shouldBe
 import io.ktor.config.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
-class RouteTest  {
+class RouteTest: StringSpec({
     val testJson = """{
     "products":[
         {
@@ -52,21 +54,21 @@ class RouteTest  {
       ]}
 """.trimIndent()
 
-    @Test
-    fun `getting products returns a list of products containing only reduced products`() = withTestApplication( {
+    "getting products returns a list of products containing only reduced products" {
         val url = "https://api.johnlewis.com/search/api/rest/v2/catalog/products/search/keyword?q=dresses"
         val key = "key=abcd"
         val client = createMockClient("$url&$key", HttpMethod.Get, testJson)
 
-        (environment.config as MapApplicationConfig).apply {
-            put("ktor.environment", "local")
-            put("services.local.jl.url", url)
-            put("services.local.jl.key", key)
-        }
-        mainModule(client)
-    } ){
-        val call = handleRequest(HttpMethod.Get, "/products")
-        val expectedResult = """
+        withTestApplication ({
+            (environment.config as MapApplicationConfig).apply {
+                put("ktor.environment", "local")
+                put("services.local.jl.url", url)
+                put("services.local.jl.key", key)
+            }
+            mainModule(client)
+        }){
+            val call = handleRequest(HttpMethod.Get, "/products")
+            val expectedResult = """
             {
               "products" : [ {
                 "productId" : "productId2",
@@ -82,41 +84,43 @@ class RouteTest  {
             }
         """.trimIndent()
 
-        assertEquals(HttpStatusCode.OK, call.response.status())
-        assertEquals(expectedResult, call.response.content)
+            call.response.status() shouldBe HttpStatusCode.OK
+            call.response.content shouldBe expectedResult
+        }
     }
-
-    @Test
-    fun `getting products returns a 400 if the client returns Forbidden`() = withTestApplication( {
+    "getting products returns a 400 if the client returns Forbidden" {
         val url = "https://api.johnlewis.com/search/api/rest/v2/catalog/products/search/keyword?q=dresses"
         val key = "key=abcd"
         val client = createMockClient("$url&$key", HttpMethod.Get, testJson, HttpStatusCode.Forbidden)
 
-        (environment.config as MapApplicationConfig).apply {
-            put("ktor.environment", "local")
-            put("services.local.jl.url", url)
-            put("services.local.jl.key", key)
+        withTestApplication( {
+            (environment.config as MapApplicationConfig).apply {
+                put("ktor.environment", "local")
+                put("services.local.jl.url", url)
+                put("services.local.jl.key", key)
+            }
+            mainModule(client)
+        } ){
+            val call = handleRequest(HttpMethod.Get, "/products")
+            call.response.status() shouldBe HttpStatusCode.BadRequest
         }
-        mainModule(client)
-    } ){
-        val call = handleRequest(HttpMethod.Get, "/products")
-        assertEquals(HttpStatusCode.BadRequest, call.response.status())
     }
 
-    @Test
-    fun `getting products returns a 400 if the client returns Notfound`() = withTestApplication( {
-        val url = "https://api.johnlewis.com/search/api/rest/v2/catalog/products/search/keyword?q=dresses"
-        val key = "key=abcd"
-        val client = createMockClient("$url&$key", HttpMethod.Get, testJson, HttpStatusCode.NotFound)
+    "getting products returns a 400 if the client returns Notfound" {
+        withTestApplication( {
+            val url = "https://api.johnlewis.com/search/api/rest/v2/catalog/products/search/keyword?q=dresses"
+            val key = "key=abcd"
+            val client = createMockClient("$url&$key", HttpMethod.Get, testJson, HttpStatusCode.NotFound)
 
-        (environment.config as MapApplicationConfig).apply {
-            put("ktor.environment", "local")
-            put("services.local.jl.url", url)
-            put("services.local.jl.key", key)
+            (environment.config as MapApplicationConfig).apply {
+                put("ktor.environment", "local")
+                put("services.local.jl.url", url)
+                put("services.local.jl.key", key)
+            }
+            mainModule(client)
+        } ){
+            val call = handleRequest(HttpMethod.Get, "/products")
+           call.response.status() shouldBe HttpStatusCode.BadRequest
         }
-        mainModule(client)
-    } ){
-        val call = handleRequest(HttpMethod.Get, "/products")
-        assertEquals(HttpStatusCode.BadRequest, call.response.status())
     }
-}
+})
