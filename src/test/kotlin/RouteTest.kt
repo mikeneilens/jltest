@@ -3,8 +3,6 @@ import io.kotest.matchers.shouldBe
 import io.ktor.config.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
-import org.junit.jupiter.api.Test
-import kotlin.test.assertEquals
 
 class RouteTest: StringSpec({
     val testJson = """{
@@ -121,6 +119,24 @@ class RouteTest: StringSpec({
         } ){
             val call = handleRequest(HttpMethod.Get, "/products")
            call.response.status() shouldBe HttpStatusCode.BadRequest
+        }
+    }
+
+    "getting products returns a 400 if the client returns invalid content" {
+        withTestApplication( {
+            val url = "https://api.johnlewis.com/search/api/rest/v2/catalog/products/search/keyword?q=dresses"
+            val key = "key=abcd"
+            val client = createMockClient("$url&$key", HttpMethod.Get, "bad json", HttpStatusCode.OK)
+
+            (environment.config as MapApplicationConfig).apply {
+                put("ktor.environment", "local")
+                put("services.local.jl.url", url)
+                put("services.local.jl.key", key)
+            }
+            mainModule(client)
+        } ){
+            val call = handleRequest(HttpMethod.Get, "/products")
+            call.response.status() shouldBe HttpStatusCode.BadRequest
         }
     }
 })

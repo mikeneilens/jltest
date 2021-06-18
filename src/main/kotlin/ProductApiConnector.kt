@@ -1,3 +1,5 @@
+import com.fasterxml.jackson.core.JsonParseException
+import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
@@ -13,14 +15,19 @@ class ProductApiConnector (
     private val baseUrl =  config.property("services.$env.jl.url").getString()
     private val key =  config.property("services.$env.jl.key").getString()
 
-    suspend fun getProducts():SourceProducts = client.get<HttpResponse>("$baseUrl&$key").handle()
+    suspend fun getProducts():SourceProducts =
+        try {
+            client.get<HttpResponse>("$baseUrl&$key").handle()
+        } catch (e: MissingKotlinParameterException) {
+            throw (BadRequestException(ErrorResponse("n/a","n/a")))
+        }
 }
 
 suspend inline fun HttpResponse.handle(): SourceProducts =
     if (status.isSuccess()) {
          receive()
     } else {
-        throw (BadRequestException(ErrorResponse("","")))
+        throw (BadRequestException(ErrorResponse("n/a","n/a")))
     }
 
 
